@@ -3,7 +3,9 @@ package simplewindow
 import core.renderengine.DisplayManager
 import core.renderengine.Loader
 import core.renderengine.Renderer
+import simplewindow.model.TexturedModel
 import simplewindow.shader.StaticShader
+import simplewindow.texture.ModelTexture
 
 fun main() {
     val displayManager = DisplayManager(title = "Simple Window")
@@ -21,12 +23,21 @@ fun main() {
         0,1,3,
         3,1,2
     )
-    val model = loader.loadToVao(vertices, indices)
+    val textures = floatArrayOf(
+        1.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+    )
+
+    val model = loader.loadToVao(vertices, textures, indices)
+    val texture = ModelTexture(loader.loadTexture("src/main/resources/zenitsu.png"))
+    val texturedModel = TexturedModel(model, texture)
 
     displayManager.loop {
         renderer.prepare()
         shader.start()
-        renderer.render(model)
+        renderer.render(texturedModel)
         shader.stop()
     }
 

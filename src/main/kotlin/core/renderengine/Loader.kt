@@ -1,5 +1,6 @@
 package core.renderengine
 
+import core.graphics.Texture
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL15
@@ -13,18 +14,27 @@ class Loader {
 
     private val vaoList = ArrayList<Int>()
     private val vboList = ArrayList<Int>()
+    private val textureList = ArrayList<Int>()
 
-    fun loadToVao(pos: FloatArray, indices: IntArray): RawModel {
+    fun loadToVao(pos: FloatArray, textures: FloatArray, indices: IntArray): RawModel {
         val vaoId = createVao()
         bindIndicesBuffer(indices)
-        storeDataInAttributeList(0, pos)
+        storeDataInAttributeList(0, 3, pos)
+        storeDataInAttributeList(1, 2, textures)
         unbindVao()
         return RawModel(vaoId, indices.size)
+    }
+
+    fun loadTexture(fileLoc: String): Int {
+        val id = Texture.loadTexture(fileLoc).id
+        textureList.add(id)
+        return id
     }
 
     fun cleanUp() {
         for (vao in vaoList) GL30.glDeleteVertexArrays(vao)
         for (vbo in vboList) GL15.glDeleteBuffers(vbo)
+        for (texture in textureList) GL11.glDeleteTextures(texture)
     }
 
     private fun createVao(): Int {
@@ -34,7 +44,7 @@ class Loader {
         return vaoId
     }
 
-    private fun storeDataInAttributeList(attributeNumber: Int, data: FloatArray) {
+    private fun storeDataInAttributeList(attributeNumber: Int, coordinateSize: Int, data: FloatArray) {
         val vboId = GL15.glGenBuffers()
         vboList.add(vboId)
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId)
@@ -43,7 +53,7 @@ class Loader {
             storeDataInFloatBuffer(data),
             GL15.GL_STATIC_DRAW
         )
-        GL20.glVertexAttribPointer(attributeNumber, 3, GL11.GL_FLOAT, false, 0, 0)
+        GL20.glVertexAttribPointer(attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0)
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0)
     }
 
