@@ -7,13 +7,16 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30
+import simplewindow.model.TexturedModel
 import simplewindow.shader.StaticShader
 import kotlin.math.tan
 
 class Renderer{
     private val projectionMatrix: Matrix4 = createProjectionMatrix()
+    private val shader: StaticShader;
 
     constructor(shader: StaticShader) {
+        this.shader = shader
         GL11.glEnable(GL11.GL_CULL_FACE)
         GL11.glCullFace(GL11.GL_BACK)
         shader.start()
@@ -27,29 +30,45 @@ class Renderer{
         GL11.glClearColor(1f, 1f, 0.5f, 1f)
     }
 
-    fun render(entity: Entity, shader: StaticShader) {
-        val texturedModel = entity.model
+    fun render(entityList: Map<TexturedModel, List<Entity>>) {
+        entityList.forEach {
+            prepareTexturedModel(it.key)
+            for (entity in it.value) {
+                prepareInstance(entity)
+                shader.loadTransformationMatrix(
+                    MathUtil.createTransformationMatrix(entity.position, entity.rotation, entity.scale)
+                )
+                GL11.glDrawElements(
+                    GL11.GL_TRIANGLES,
+                    it.key.rawModel.vertexCount,
+                    GL11.GL_UNSIGNED_INT,
+                    0
+                )
+            }
+            unbindTexturedModel()
+        }
+    }
+
+    fun prepareTexturedModel(texturedModel: TexturedModel) {
         val model = texturedModel.rawModel
         GL30.glBindVertexArray(model.vaoId)
         GL20.glEnableVertexAttribArray(0)
         GL20.glEnableVertexAttribArray(1)
         GL20.glEnableVertexAttribArray(2)
-        shader.loadTransformationMatrix(
-            MathUtil.createTransformationMatrix(entity.position, entity.rotation, entity.scale)
-        )
         shader.loadShineVariables(texturedModel.texture.shineDamper, texturedModel.texture.reflectivity)
         GL13.glActiveTexture(GL13.GL_TEXTURE0)
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.texture.textureId)
-        GL11.glDrawElements(
-            GL11.GL_TRIANGLES,
-            model.vertexCount,
-            GL11.GL_UNSIGNED_INT,
-            0
-        )
+    }
+
+    fun unbindTexturedModel() {
         GL20.glDisableVertexAttribArray(0)
         GL20.glDisableVertexAttribArray(1)
         GL20.glDisableVertexAttribArray(2)
         GL30.glBindVertexArray(0)
+    }
+
+    fun prepareInstance(entity: Entity) {
+
     }
 
     companion object {
