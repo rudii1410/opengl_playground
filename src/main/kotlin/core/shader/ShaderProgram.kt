@@ -1,10 +1,14 @@
 package core.shader
 
+import core.math.Matrix4
+import core.math.Vector3
+import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL20
 import java.io.BufferedReader
 import java.io.FileReader
 import java.io.IOException
+import java.util.Vector
 import kotlin.system.exitProcess
 
 
@@ -19,9 +23,17 @@ abstract class ShaderProgram {
         programId = GL20.glCreateProgram()
         GL20.glAttachShader(programId, vertexShaderId)
         GL20.glAttachShader(programId, fragmentShaderId)
+        bindAttributes()
         GL20.glLinkProgram(programId)
         GL20.glValidateProgram(programId);
-        bindAttributes()
+        getAllUniformLocation()
+    }
+
+    protected abstract fun getAllUniformLocation()
+    protected abstract fun bindAttributes();
+
+    protected fun getUniformLocation(uniformName: String): Int {
+        return GL20.glGetUniformLocation(programId, uniformName)
     }
 
     fun start() {
@@ -41,13 +53,28 @@ abstract class ShaderProgram {
         GL20.glDeleteProgram(programId)
     }
 
-    protected abstract fun bindAttributes();
-
     protected fun bindAttribute(attribute: Int, variableName: String) {
         GL20.glBindAttribLocation(programId, attribute, variableName)
     }
 
+    protected fun loadFloat(location: Int, value: Float) {
+        GL20.glUniform1f(location, value)
+    }
+
+    private fun loadVector(location: Int, vector: Vector3) {
+        GL20.glUniform3f(location, vector.x(), vector.y(), vector.z())
+    }
+
+    protected fun loadBoolean(location: Int, value: Boolean) {
+        GL20.glUniform1f(location, if (value) 1f else 0f)
+    }
+
+    protected fun loadMatrix(location: Int, matrix: Matrix4) {
+        GL20.glUniformMatrix4fv(location, false, matrix.toBuffer())
+    }
+
     companion object {
+        private val matrixBuffer = BufferUtils.createFloatBuffer(16)
         private fun loadShader(file: String, type: Int): Int {
             val shaderSrc = StringBuilder()
             try {

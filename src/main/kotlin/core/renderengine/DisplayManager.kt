@@ -1,5 +1,6 @@
 package core.renderengine
 
+import core.InputHandler
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -10,8 +11,7 @@ import org.lwjgl.system.MemoryUtil.NULL
 
 
 class DisplayManager {
-    private var window: Long
-
+    private var window = 0L
     constructor(width: Int = 1280, height: Int = 720, title: String?) {
         GLFWErrorCallback.createPrint(System.err).set()
 
@@ -24,11 +24,7 @@ class DisplayManager {
         window = GLFW.glfwCreateWindow(width, height, title ?: "", NULL, NULL)
         if (window === NULL) throw RuntimeException("Failed to create the GLFW window")
 
-        GLFW.glfwSetKeyCallback(window) { window: Long, key: Int, _: Int, action: Int, _: Int ->
-            if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) {
-                GLFW.glfwSetWindowShouldClose(window, true)
-            }
-        }
+        InputHandler.init(window)
 
         // Get the thread stack and push a new frame
         stackPush().use { stack ->
@@ -62,10 +58,12 @@ class DisplayManager {
 
     fun loop(cb: () -> Unit) {
         while (!GLFW.glfwWindowShouldClose(window)) {
+            InputHandler.update()
+            GLFW.glfwPollEvents()
+
             cb()
 
             GLFW.glfwSwapBuffers(window)
-            GLFW.glfwPollEvents()
         }
     }
 
