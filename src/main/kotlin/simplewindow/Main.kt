@@ -1,8 +1,9 @@
 package simplewindow
 
-import core.Camera
-import core.Entity
+import core.entities.Camera
+import core.entities.Entity
 import core.OBJLoader
+import core.entities.Light
 import core.math.Vector3
 import core.renderengine.DisplayManager
 import core.renderengine.Loader
@@ -17,82 +18,15 @@ fun main() {
     val shader = StaticShader()
     val renderer = Renderer(shader)
 
-    val vertices = floatArrayOf(
-        -0.5f,0.5f,-0.5f,
-        -0.5f,-0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f,0.5f,-0.5f,
-
-        -0.5f,0.5f,0.5f,
-        -0.5f,-0.5f,0.5f,
-        0.5f,-0.5f,0.5f,
-        0.5f,0.5f,0.5f,
-
-        0.5f,0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f,-0.5f,0.5f,
-        0.5f,0.5f,0.5f,
-
-        -0.5f,0.5f,-0.5f,
-        -0.5f,-0.5f,-0.5f,
-        -0.5f,-0.5f,0.5f,
-        -0.5f,0.5f,0.5f,
-
-        -0.5f,0.5f,0.5f,
-        -0.5f,0.5f,-0.5f,
-        0.5f,0.5f,-0.5f,
-        0.5f,0.5f,0.5f,
-
-        -0.5f,-0.5f,0.5f,
-        -0.5f,-0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f,-0.5f,0.5f
-    )
-    val indices = intArrayOf(
-        0,1,3,
-        3,1,2,
-        4,5,7,
-        7,5,6,
-        8,9,11,
-        11,9,10,
-        12,13,15,
-        15,13,14,
-        16,17,19,
-        19,17,18,
-        20,21,23,
-        23,21,22
-    )
-    val textures = floatArrayOf(
-        0f,0f,
-        0f,1f,
-        1f,1f,
-        1f,0f,
-        0f,0f,
-        0f,1f,
-        1f,1f,
-        1f,0f,
-        0f,0f,
-        0f,1f,
-        1f,1f,
-        1f,0f,
-        0f,0f,
-        0f,1f,
-        1f,1f,
-        1f,0f,
-        0f,0f,
-        0f,1f,
-        1f,1f,
-        1f,0f,
-        0f,0f,
-        0f,1f,
-        1f,1f,
-        1f,0f
-    )
-
-    val model = OBJLoader.loadObjModel("src/main/resources/stall.obj", loader)
-    val texture = ModelTexture(loader.loadTexture("src/main/resources/stallTexture.png"))
-    val texturedModel = TexturedModel(model, texture)
-    val entity = Entity(texturedModel, Vector3(0f, 0f, -50f), Vector3(0f), 1f)
+    val texturedModel = TexturedModel(
+        OBJLoader.loadObjModel("src/main/resources/stall.obj", loader),
+        ModelTexture(loader.loadTexture("src/main/resources/stallTexture.png"))
+    ).also {
+        it.texture.shineDamper = 10f
+        it.texture.reflectivity = 0f
+    }
+    val entity = Entity(texturedModel, Vector3(0f, -5f, -25f), Vector3(0f), 1f)
+    val light = Light(Vector3(0f, 0f, -20f), Vector3(1f, 1f, 1f))
     val camera = Camera()
 
     displayManager.loop {
@@ -100,6 +34,7 @@ fun main() {
         camera.move()
         renderer.prepare()
         shader.start()
+        shader.loadLight(light)
         shader.loadViewMatrix(camera)
         renderer.render(entity, shader)
         shader.stop()

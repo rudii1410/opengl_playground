@@ -1,5 +1,6 @@
-package core
+package core.entities
 
+import core.InputHandler
 import core.math.Vector3
 import org.lwjgl.glfw.GLFW
 
@@ -18,6 +19,8 @@ class Camera {
         if (InputHandler.keyDown(GLFW.GLFW_KEY_S)) position.z(position.z() - SPEED)
         if (InputHandler.keyDown(GLFW.GLFW_KEY_A)) position.x(position.x() + SPEED)
         if (InputHandler.keyDown(GLFW.GLFW_KEY_D)) position.x(position.x() - SPEED)
+        if (InputHandler.keyDown(GLFW.GLFW_KEY_LEFT_CONTROL)) position.y(position.y() + SPEED)
+        if (InputHandler.keyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) position.y(position.y() - SPEED)
     }
 
     companion object {

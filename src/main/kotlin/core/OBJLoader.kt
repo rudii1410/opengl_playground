@@ -65,7 +65,7 @@ object OBJLoader {
             indicesArray[idx] = element
         }
 
-        return loader.loadToVao(verticesArray, texturesArray, indicesArray)
+        return loader.loadToVao(verticesArray, texturesArray, normalsArray, indicesArray)
     }
 
     private fun processVertex(

@@ -1,6 +1,6 @@
 package core.util
 
-import core.Camera
+import core.entities.Camera
 import core.math.Matrix4
 import core.math.Vector3
 

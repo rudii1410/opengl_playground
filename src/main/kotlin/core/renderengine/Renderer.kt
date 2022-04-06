@@ -1,6 +1,6 @@
 package core.renderengine
 
-import core.Entity
+import core.entities.Entity
 import core.math.Matrix4
 import core.util.MathUtil
 import org.lwjgl.opengl.GL11
@@ -14,6 +14,8 @@ class Renderer{
     private val projectionMatrix: Matrix4 = createProjectionMatrix()
 
     constructor(shader: StaticShader) {
+        GL11.glEnable(GL11.GL_CULL_FACE)
+        GL11.glCullFace(GL11.GL_BACK)
         shader.start()
         shader.loadProjectionMatrix(projectionMatrix)
         shader.stop()
@@ -22,7 +24,7 @@ class Renderer{
     fun prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
-        GL11.glClearColor(0f, 0f, 0f, 1f)
+        GL11.glClearColor(1f, 1f, 0.5f, 1f)
     }
 
     fun render(entity: Entity, shader: StaticShader) {
@@ -31,9 +33,11 @@ class Renderer{
         GL30.glBindVertexArray(model.vaoId)
         GL20.glEnableVertexAttribArray(0)
         GL20.glEnableVertexAttribArray(1)
+        GL20.glEnableVertexAttribArray(2)
         shader.loadTransformationMatrix(
             MathUtil.createTransformationMatrix(entity.position, entity.rotation, entity.scale)
         )
+        shader.loadShineVariables(texturedModel.texture.shineDamper, texturedModel.texture.reflectivity)
         GL13.glActiveTexture(GL13.GL_TEXTURE0)
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.texture.textureId)
         GL11.glDrawElements(
@@ -42,8 +46,9 @@ class Renderer{
             GL11.GL_UNSIGNED_INT,
             0
         )
-        GL20.glEnableVertexAttribArray(0)
-        GL20.glEnableVertexAttribArray(1)
+        GL20.glDisableVertexAttribArray(0)
+        GL20.glDisableVertexAttribArray(1)
+        GL20.glDisableVertexAttribArray(2)
         GL30.glBindVertexArray(0)
     }
 

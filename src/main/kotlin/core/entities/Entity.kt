@@ -1,4 +1,4 @@
-package core
+package core.entities
 
 import core.math.Vector3
 import simplewindow.model.TexturedModel

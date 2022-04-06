@@ -16,11 +16,12 @@ class Loader {
     private val vboList = ArrayList<Int>()
     private val textureList = ArrayList<Int>()
 
-    fun loadToVao(pos: FloatArray, textures: FloatArray, indices: IntArray): RawModel {
+    fun loadToVao(pos: FloatArray, textures: FloatArray, normals: FloatArray, indices: IntArray): RawModel {
         val vaoId = createVao()
         bindIndicesBuffer(indices)
         storeDataInAttributeList(0, 3, pos)
         storeDataInAttributeList(1, 2, textures)
+        storeDataInAttributeList(2, 3, normals)
         unbindVao()
         return RawModel(vaoId, indices.size)
     }
@@ -28,6 +29,10 @@ class Loader {
     fun loadTexture(fileLoc: String): Int {
         val id = Texture.loadTexture(fileLoc).id
         textureList.add(id)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
         return id
     }
 

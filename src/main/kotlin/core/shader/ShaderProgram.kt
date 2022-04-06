@@ -61,7 +61,7 @@ abstract class ShaderProgram {
         GL20.glUniform1f(location, value)
     }
 
-    private fun loadVector(location: Int, vector: Vector3) {
+    protected fun loadVector(location: Int, vector: Vector3) {
         GL20.glUniform3f(location, vector.x(), vector.y(), vector.z())
     }
 
