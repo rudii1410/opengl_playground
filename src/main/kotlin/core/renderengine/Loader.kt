@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30
 import java.nio.FloatBuffer
+import java.nio.IntBuffer
 
 
 class Loader {
@@ -13,11 +14,12 @@ class Loader {
     private val vaoList = ArrayList<Int>()
     private val vboList = ArrayList<Int>()
 
-    fun loadToVao(pos: FloatArray): RawModel {
+    fun loadToVao(pos: FloatArray, indices: IntArray): RawModel {
         val vaoId = createVao()
+        bindIndicesBuffer(indices)
         storeDataInAttributeList(0, pos)
         unbindVao()
-        return RawModel(vaoId, pos.size/3)
+        return RawModel(vaoId, indices.size)
     }
 
     fun cleanUp() {
@@ -49,10 +51,28 @@ class Loader {
         GL30.glBindVertexArray(0)
     }
 
+    private fun bindIndicesBuffer(indices: IntArray) {
+        val vboId = GL15.glGenBuffers()
+        vboList.add(vboId)
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboId)
+        GL15.glBufferData(
+            GL15.GL_ELEMENT_ARRAY_BUFFER,
+            storeDataInIntBuffer(indices),
+            GL15.GL_STATIC_DRAW
+        )
+    }
+
+    private fun storeDataInIntBuffer(data: IntArray): IntBuffer {
+        return BufferUtils.createIntBuffer(data.size).also {
+            it.put(data)
+            it.flip()
+        }
+    }
+
     private fun storeDataInFloatBuffer(data: FloatArray): FloatBuffer {
-        val buffer = BufferUtils.createFloatBuffer(data.size)
-        buffer.put(data)
-        buffer.flip()
-        return buffer;
+        return BufferUtils.createFloatBuffer(data.size).also {
+            it.put(data)
+            it.flip()
+        }
     }
 }
