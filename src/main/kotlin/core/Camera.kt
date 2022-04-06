@@ -14,9 +14,13 @@ class Camera {
         private set
 
     fun move() {
-        if (InputHandler.keyDown(GLFW.GLFW_KEY_W)) position.sub(0f, 0f, -0.1f)
-        if (InputHandler.keyDown(GLFW.GLFW_KEY_S)) position.sub(0f, 0f, 0.1f)
-        if (InputHandler.keyDown(GLFW.GLFW_KEY_D)) position.sub(0.02f, 0f, 0f)
-        if (InputHandler.keyDown(GLFW.GLFW_KEY_A)) position.sub(-0.02f, 0f, 0f)
+        if (InputHandler.keyDown(GLFW.GLFW_KEY_W)) position.z(position.z() + SPEED)
+        if (InputHandler.keyDown(GLFW.GLFW_KEY_S)) position.z(position.z() - SPEED)
+        if (InputHandler.keyDown(GLFW.GLFW_KEY_A)) position.x(position.x() + SPEED)
+        if (InputHandler.keyDown(GLFW.GLFW_KEY_D)) position.x(position.x() - SPEED)
+    }
+
+    companion object {
+        private const val SPEED = 0.2f
     }
 }

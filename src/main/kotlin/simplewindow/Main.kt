@@ -2,6 +2,7 @@ package simplewindow
 
 import core.Camera
 import core.Entity
+import core.OBJLoader
 import core.math.Vector3
 import core.renderengine.DisplayManager
 import core.renderengine.Loader
@@ -88,14 +89,14 @@ fun main() {
         1f,0f
     )
 
-    val model = loader.loadToVao(vertices, textures, indices)
-    val texture = ModelTexture(loader.loadTexture("src/main/resources/zenitsu.png"))
+    val model = OBJLoader.loadObjModel("src/main/resources/stall.obj", loader)
+    val texture = ModelTexture(loader.loadTexture("src/main/resources/stallTexture.png"))
     val texturedModel = TexturedModel(model, texture)
-    val entity = Entity(texturedModel, Vector3(0f, 0f, -5f), Vector3(0f), 1f)
+    val entity = Entity(texturedModel, Vector3(0f, 0f, -50f), Vector3(0f), 1f)
     val camera = Camera()
 
     displayManager.loop {
-        entity.increaseRotation(1f, 1f, 0f)
+        entity.increaseRotation(0f, 1f, 0f)
         camera.move()
         renderer.prepare()
         shader.start()
