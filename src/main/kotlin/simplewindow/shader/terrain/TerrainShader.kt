@@ -1,4 +1,4 @@
-package simplewindow.shader
+package simplewindow.shader.terrain
 
 import core.entities.Camera
 import core.entities.Light
@@ -6,7 +6,7 @@ import core.math.Matrix4
 import core.shader.ShaderProgram
 import core.util.MathUtil
 
-class StaticShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
+class TerrainShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
     private var locationTransformationMatrix = 0
     private var locationProjectionMatrix = 0
     private var locationViewMatrix = 0
@@ -54,8 +54,8 @@ class StaticShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
     }
 
     companion object {
-        private const val SHADER_DIR = "src/main/kotlin/simplewindow/shader"
-        private const val VERTEX_FILE = "$SHADER_DIR/vertexShader.txt"
-        private const val FRAGMENT_FILE = "$SHADER_DIR/fragmentShader.txt"
+        private const val SHADER_DIR = "src/main/kotlin/simplewindow/shader/terrain"
+        private const val VERTEX_FILE = "$SHADER_DIR/terrainVertexShader.txt"
+        private const val FRAGMENT_FILE = "$SHADER_DIR/terrainFragmentShader.txt"
     }
 }

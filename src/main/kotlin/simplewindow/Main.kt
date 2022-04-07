@@ -8,9 +8,8 @@ import core.math.Vector3
 import core.renderengine.DisplayManager
 import core.renderengine.Loader
 import core.renderengine.MasterRenderer
-import core.renderengine.Renderer
+import core.terains.Terrain
 import simplewindow.model.TexturedModel
-import simplewindow.shader.StaticShader
 import simplewindow.texture.ModelTexture
 import kotlin.random.Random
 
@@ -27,7 +26,7 @@ fun main() {
     }
     val entityList = mutableListOf<Entity>()
     val random = Random(1)
-    for (i in 0..10000) {
+    for (i in 0..1) {
         val pos = Vector3(
             random.nextFloat() * 500,
             random.nextFloat() * 500,
@@ -41,9 +40,14 @@ fun main() {
         entityList.add(Entity(texturedModel, pos, rot, 1f))
     }
 
+    val terrain = Terrain(0, 0, loader, ModelTexture(loader.loadTexture("src/main/resources/grass.png")))
+    val terrain1 = Terrain(1, 0, loader, ModelTexture(loader.loadTexture("src/main/resources/grass.png")))
 
     val light = Light(Vector3(0f, 0f, -20f), Vector3(1f, 1f, 1f))
-    val camera = Camera()
+    val camera = Camera().also {
+        it.position = Vector3(0f, 0.5f, 0f)
+        it.yaw = Math.toRadians(180.0).toFloat()
+    }
     val renderer = MasterRenderer()
 
     displayManager.loop {
@@ -52,6 +56,8 @@ fun main() {
         for(entity in entityList) {
             renderer.processEntity(entity)
         }
+        renderer.processTerrain(terrain)
+        renderer.processTerrain(terrain1)
 
         renderer.render(light, camera)
     }

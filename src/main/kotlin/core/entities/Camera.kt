@@ -6,13 +6,9 @@ import org.lwjgl.glfw.GLFW
 
 class Camera {
     var position = Vector3()
-        private set
     var pitch = 0f
-        private set
     var yaw = 0f
-        private set
     var roll = 0f
-        private set
     private var speedMultiplier = 1f
 
     fun move() {
