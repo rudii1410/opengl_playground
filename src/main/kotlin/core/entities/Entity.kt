@@ -3,7 +3,7 @@ package core.entities
 import core.math.Vector3
 import simplewindow.model.TexturedModel
 
-class Entity(
+open class Entity(
     val model: TexturedModel,
     val position: Vector3,
     val rotation: Vector3,

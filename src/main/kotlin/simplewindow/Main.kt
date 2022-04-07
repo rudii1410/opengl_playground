@@ -4,6 +4,7 @@ import core.entities.Camera
 import core.entities.Entity
 import objloader.OBJLoader
 import core.entities.Light
+import core.entities.Player
 import core.math.Vector3
 import core.renderengine.DisplayManager
 import core.renderengine.Loader
@@ -43,20 +44,20 @@ fun main() {
         TerrainTexture(loader.loadTexture(getTextureFile("path")))
     )
     val blendMap = TerrainTexture(loader.loadTexture(getTextureFile("blendMap")))
-
     val terrain = Terrain(0, 0, loader, texturePack, blendMap)
     val terrain2 = Terrain(1, 0, loader, texturePack, blendMap)
 
+    val player = Player(generateTextureModel(loader, "stall", "stallTexture"), Vector3(100f, 0f, -50f), Vector3(0f), 1f)
+
     val light = Light(Vector3(0f, 250f, -250f), Vector3(1f, 1f, 1f))
-    val camera = Camera().also {
-        it.position = Vector3(0f, 0.5f, 0f)
-        it.yaw = Math.toRadians(180.0).toFloat()
-    }
+    val camera = Camera(player)
     val renderer = MasterRenderer()
 
     displayManager.loop {
         camera.move()
+        player.move()
 
+        renderer.processEntity(player)
         for(entity in entityList) {
             renderer.processEntity(entity)
         }

@@ -1,8 +1,10 @@
 package core
 
 import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.glfw.GLFWCursorPosCallbackI
 import org.lwjgl.glfw.GLFWKeyCallback
 import org.lwjgl.glfw.GLFWMouseButtonCallback
+import org.lwjgl.glfw.GLFWScrollCallbackI
 
 
 object InputHandler {
@@ -16,23 +18,48 @@ object InputHandler {
     private var lastMouseNS: Long = 0
     private const val mouseDoubleClickPeriodNS = (1000000000 / 5).toLong()
     private const val NO_STATE = -1
-    internal var keyboard: GLFWKeyCallback = object : GLFWKeyCallback() {
+    private var onMouseScroll: ((offset: Float) -> Unit)? = null
+    private var onMouseMove: ((dx: Float, dy: Float) -> Unit)? = null
+    private var keyboard: GLFWKeyCallback = object : GLFWKeyCallback() {
         override fun invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
             activeKeys[key] = action != GLFW_RELEASE
             keyStates[key] = action
         }
     }
-    internal var mouse: GLFWMouseButtonCallback = object : GLFWMouseButtonCallback() {
+    private var mouse: GLFWMouseButtonCallback = object : GLFWMouseButtonCallback() {
         override fun invoke(window: Long, button: Int, action: Int, mods: Int) {
             activeMouseButtons[button] = action != GLFW_RELEASE
             mouseButtonStates[button] = action
         }
+    }
+    private var mouseScroll: GLFWScrollCallbackI = GLFWScrollCallbackI { _, xoffset, yoffset ->
+        onMouseScroll?.invoke(yoffset.toFloat())
+    }
+
+    private var oldPosX: Double = 0.0
+    private var oldPosY: Double = 0.0
+    private var newPosX: Double = 0.0
+    private var newPosY: Double = 0.0
+    private var mouseMove: GLFWCursorPosCallbackI = GLFWCursorPosCallbackI { _, xpos, ypos ->
+        oldPosX = newPosX
+        oldPosY = newPosY
+
+        onMouseMove?.invoke(
+            (xpos - oldPosX).toFloat(),
+            (ypos - oldPosY).toFloat()
+        )
+
+        newPosX = xpos
+        newPosY = ypos
     }
 
     internal fun init(window: Long) {
         InputHandler.window = window
 
         glfwSetKeyCallback(window, keyboard)
+        glfwSetMouseButtonCallback(window, mouse)
+        glfwSetScrollCallback(window, mouseScroll)
+        glfwSetCursorPosCallback(window, mouseMove)
 
         resetKeyboard()
         resetMouse()
@@ -92,5 +119,13 @@ object InputHandler {
             return true
         }
         return false
+    }
+
+    fun mouseOnScroll(cb: (offset: Float)->Unit) {
+        this.onMouseScroll = cb
+    }
+
+    fun mouseDeltaMove(cb: (dx: Float, dy: Float) -> Unit) {
+        this.onMouseMove = cb
     }
 }

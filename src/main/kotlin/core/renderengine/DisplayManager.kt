@@ -54,10 +54,16 @@ class DisplayManager {
 
         // Make the window visible
         GLFW.glfwShowWindow(window)
+
+        lastFrameTime = getCurrentTime()
     }
 
     fun loop(cb: () -> Unit) {
         while (!GLFW.glfwWindowShouldClose(window)) {
+            val currentTime = getCurrentTime()
+            delta = currentTime - lastFrameTime
+            lastFrameTime = currentTime
+
             InputHandler.update()
             GLFW.glfwPollEvents()
 
@@ -73,5 +79,18 @@ class DisplayManager {
 
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null)?.free();
+    }
+
+    companion object {
+        private var lastFrameTime: Float = 0f
+        private var delta: Float = 0f
+
+        private fun getCurrentTime(): Float {
+            return GLFW.glfwGetTime().toFloat() * 1000
+        }
+
+        fun getFrameTimeSeconds(): Float {
+            return delta / 1000
+        }
     }
 }
