@@ -42,12 +42,19 @@ class EntityRenderer {
         GL20.glEnableVertexAttribArray(0)
         GL20.glEnableVertexAttribArray(1)
         GL20.glEnableVertexAttribArray(2)
-        shader.loadShineVariables(texturedModel.texture.shineDamper, texturedModel.texture.reflectivity)
+
+        val texture = texturedModel.texture
+        if (texture.hasTransparency) {
+            MasterRenderer.disableCulling()
+        }
+        shader.loadFakeLightingVariable(texture.useFakeLighting)
+        shader.loadShineVariables(texture.shineDamper, texture.reflectivity)
         GL13.glActiveTexture(GL13.GL_TEXTURE0)
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.texture.textureId)
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.textureId)
     }
 
     private fun unbindTexturedModel() {
+        MasterRenderer.enableCulling()
         GL20.glDisableVertexAttribArray(0)
         GL20.glDisableVertexAttribArray(1)
         GL20.glDisableVertexAttribArray(2)

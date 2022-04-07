@@ -21,8 +21,7 @@ class MasterRenderer {
     private val terrainList = ArrayList<Terrain>()
 
     constructor() {
-        GL11.glEnable(GL11.GL_CULL_FACE)
-        GL11.glCullFace(GL11.GL_BACK)
+        enableCulling()
         projectionMatrix = createProjectionMatrix()
         entityRenderer = EntityRenderer(shader, projectionMatrix)
         terrainRenderer = TerrainRenderer(terrainShader, projectionMatrix)
@@ -32,12 +31,14 @@ class MasterRenderer {
         prepare()
 
         shader.start()
+        shader.loadSkyColor(SKY_RED, SKY_GREEN, SKY_BLUE)
         shader.loadLight(sun)
         shader.loadViewMatrix(camera)
         entityRenderer.render(entityList)
         shader.stop()
 
         terrainShader.start()
+        terrainShader.loadSkyColor(SKY_RED, SKY_GREEN, SKY_BLUE)
         terrainShader.loadLight(sun)
         terrainShader.loadViewMatrix(camera)
         terrainRenderer.render(terrainList)
@@ -68,7 +69,7 @@ class MasterRenderer {
     private fun prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
-        GL11.glClearColor(1f, 1f, 0.5f, 1f)
+        GL11.glClearColor(SKY_RED, SKY_GREEN, SKY_BLUE, 1f)
     }
 
     private fun createProjectionMatrix(): Matrix4 {
@@ -91,5 +92,18 @@ class MasterRenderer {
         private const val FOV = 70f
         private const val NEAR_PLANE = 0.1f
         private const val FAR_PLANE = 1000f
+
+        private const val SKY_RED = 0.5f
+        private const val SKY_GREEN = 0.5f
+        private const val SKY_BLUE = 1f
+
+        fun enableCulling() {
+            GL11.glEnable(GL11.GL_CULL_FACE)
+            GL11.glCullFace(GL11.GL_BACK)
+        }
+
+        fun disableCulling() {
+            GL11.glDisable(GL11.GL_CULL_FACE)
+        }
     }
 }

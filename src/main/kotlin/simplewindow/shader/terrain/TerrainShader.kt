@@ -3,6 +3,7 @@ package simplewindow.shader.terrain
 import core.entities.Camera
 import core.entities.Light
 import core.math.Matrix4
+import core.math.Vector3
 import core.shader.ShaderProgram
 import core.util.MathUtil
 
@@ -14,6 +15,7 @@ class TerrainShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
     private var locationLightColor = 0
     private var locationShineDamper = 0
     private var locationReflectivity = 0
+    private var locationSkyColor = 0
 
     override fun bindAttributes() {
         bindAttribute(0, "position")
@@ -29,6 +31,7 @@ class TerrainShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
         locationLightColor = getUniformLocation("lightColor")
         locationShineDamper = getUniformLocation("shineDamper")
         locationReflectivity = getUniformLocation("reflectivity")
+        locationSkyColor = getUniformLocation("skyColor")
     }
 
     fun loadTransformationMatrix(matrix: Matrix4) {
@@ -51,6 +54,10 @@ class TerrainShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
     fun loadShineVariables(damper: Float, reflectivity: Float) {
         loadFloat(locationShineDamper, damper)
         loadFloat(locationReflectivity, reflectivity)
+    }
+
+    fun loadSkyColor(r: Float, g: Float, b: Float) {
+        loadVector(locationSkyColor, Vector3(r, g, b))
     }
 
     companion object {
