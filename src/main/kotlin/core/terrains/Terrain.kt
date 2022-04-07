@@ -1,42 +1,26 @@
-package core.terains
+package core.terrains
 
 import core.math.Vector3
 import core.renderengine.Loader
 import core.renderengine.RawModel
-import simplewindow.texture.ModelTexture
+import simplewindow.texture.TerrainTexture
+import simplewindow.texture.TerrainTexturePack
 
 
-class Terrain {
-    private val x: Float
-    private val z: Float
-    private val model: RawModel
-    private val texture: ModelTexture
+class Terrain(
+    gridX: Int,
+    gridZ: Int,
+    loader: Loader,
+    val texturePack: TerrainTexturePack,
+    val blendMap: TerrainTexture
+) {
+    val x = gridX.toFloat() * SIZE
+    val z = gridZ.toFloat() * SIZE
+    val model = generateTerrain(loader)
 
-    constructor(gridX: Int, gridZ: Int, loader: Loader, texture: ModelTexture) {
-        this.texture = texture
-        x = gridX.toFloat() * SIZE
-        z = gridZ.toFloat() * SIZE
-        model = generateTerrain(loader)
-    }
-
-    fun getX(): Float {
-        return x;
-    }
-
-    fun getZ(): Float {
-        return z;
-    }
 
     fun getPosVec3(): Vector3 {
         return Vector3(x, 0f, z)
-    }
-
-    fun getModel(): RawModel {
-        return model
-    }
-
-    fun getTexture(): ModelTexture {
-        return texture
     }
 
     private fun generateTerrain(loader: Loader): RawModel {

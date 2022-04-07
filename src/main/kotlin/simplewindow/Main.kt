@@ -8,9 +8,11 @@ import core.math.Vector3
 import core.renderengine.DisplayManager
 import core.renderengine.Loader
 import core.renderengine.MasterRenderer
-import core.terains.Terrain
+import core.terrains.Terrain
 import simplewindow.model.TexturedModel
 import simplewindow.texture.ModelTexture
+import simplewindow.texture.TerrainTexture
+import simplewindow.texture.TerrainTexturePack
 import kotlin.random.Random
 
 fun main() {
@@ -34,8 +36,16 @@ fun main() {
         entityList.add(Entity(fern, generateRandomPos(random), Vector3(0f), 1f))
     }
 
-    val terrain = Terrain(0, 0, loader, ModelTexture(loader.loadTexture("src/main/resources/grass.png")))
-    val terrain2 = Terrain(1, 0, loader, ModelTexture(loader.loadTexture("src/main/resources/grass.png")))
+    val texturePack = TerrainTexturePack(
+        TerrainTexture(loader.loadTexture(getTextureFile("grass"))),
+        TerrainTexture(loader.loadTexture(getTextureFile("mud"))),
+        TerrainTexture(loader.loadTexture(getTextureFile("grassFlowers"))),
+        TerrainTexture(loader.loadTexture(getTextureFile("path")))
+    )
+    val blendMap = TerrainTexture(loader.loadTexture(getTextureFile("blendMap")))
+
+    val terrain = Terrain(0, 0, loader, texturePack, blendMap)
+    val terrain2 = Terrain(1, 0, loader, texturePack, blendMap)
 
     val light = Light(Vector3(0f, 250f, -250f), Vector3(1f, 1f, 1f))
     val camera = Camera().also {

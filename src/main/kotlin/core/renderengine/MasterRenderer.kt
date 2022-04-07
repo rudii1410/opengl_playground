@@ -4,7 +4,7 @@ import core.entities.Camera
 import core.entities.Entity
 import core.entities.Light
 import core.math.Matrix4
-import core.terains.Terrain
+import core.terrains.Terrain
 import org.lwjgl.opengl.GL11
 import simplewindow.model.TexturedModel
 import simplewindow.shader.static.StaticShader

@@ -11,11 +11,18 @@ class TerrainShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
     private var locationTransformationMatrix = 0
     private var locationProjectionMatrix = 0
     private var locationViewMatrix = 0
-    private var locationLightPos= 0
+    private var locationLightPos = 0
+
     private var locationLightColor = 0
     private var locationShineDamper = 0
     private var locationReflectivity = 0
     private var locationSkyColor = 0
+
+    private var locationBgTexture = 0
+    private var locationRTexture = 0
+    private var locationGTexture = 0
+    private var locationBTexture = 0
+    private var locationBlendMap = 0
 
     override fun bindAttributes() {
         bindAttribute(0, "position")
@@ -28,10 +35,17 @@ class TerrainShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
         locationProjectionMatrix = getUniformLocation("projectionMatrix")
         locationViewMatrix = getUniformLocation("viewMatrix")
         locationLightPos = getUniformLocation("lightPosition")
+
         locationLightColor = getUniformLocation("lightColor")
         locationShineDamper = getUniformLocation("shineDamper")
         locationReflectivity = getUniformLocation("reflectivity")
         locationSkyColor = getUniformLocation("skyColor")
+
+        locationBgTexture = getUniformLocation("bgTexture")
+        locationRTexture = getUniformLocation("rTexture")
+        locationGTexture = getUniformLocation("gTexture")
+        locationBTexture = getUniformLocation("bTexture")
+        locationBlendMap = getUniformLocation("blendMap")
     }
 
     fun loadTransformationMatrix(matrix: Matrix4) {
@@ -58,6 +72,14 @@ class TerrainShader : ShaderProgram(VERTEX_FILE, FRAGMENT_FILE) {
 
     fun loadSkyColor(r: Float, g: Float, b: Float) {
         loadVector(locationSkyColor, Vector3(r, g, b))
+    }
+
+    fun connectTextureUnits() {
+        loadInt(locationBgTexture, 0)
+        loadInt(locationRTexture, 1)
+        loadInt(locationGTexture, 2)
+        loadInt(locationBTexture, 3)
+        loadInt(locationBlendMap, 4)
     }
 
     companion object {
